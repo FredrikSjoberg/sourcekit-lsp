@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift.org open source project
 //
-// Copyright (c) 2014 - 2018 Apple Inc. and the Swift project authors
+// Copyright (c) 2014 - 2019 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -23,6 +23,9 @@ public struct ServerCapabilities: Codable, Hashable {
 
   /// Whether the server provides "textDocument/definition".
   public var definitionProvider: Bool?
+  
+  /// Whether the server provides "textDocument/typeDefinition".
+  public var typeDefinitionProvider: Bool?
 
   /// Whether the server provides "textDocument/references".
   public var referencesProvider: Bool?
@@ -58,6 +61,7 @@ public struct ServerCapabilities: Codable, Hashable {
     completionProvider: CompletionOptions? = nil,
     hoverProvider: Bool? = nil,
     definitionProvider: Bool? = nil,
+    typeDefinitionProvider: Bool? = nil,
     referencesProvider: Bool? = nil,
     documentHighlightProvider: Bool? = nil,
     documentFormattingProvider: Bool? = nil,
@@ -73,6 +77,7 @@ public struct ServerCapabilities: Codable, Hashable {
     self.completionProvider = completionProvider
     self.hoverProvider = hoverProvider
     self.definitionProvider = definitionProvider
+    self.typeDefinitionProvider = typeDefinitionProvider
     self.referencesProvider = referencesProvider
     self.documentHighlightProvider = documentHighlightProvider
     self.documentFormattingProvider = documentFormattingProvider
@@ -89,6 +94,7 @@ public struct ServerCapabilities: Codable, Hashable {
     self.completionProvider = try container.decodeIfPresent(CompletionOptions.self, forKey: .completionProvider)
     self.hoverProvider = try container.decodeIfPresent(Bool.self, forKey: .hoverProvider)
     self.definitionProvider = try container.decodeIfPresent(Bool.self, forKey: .definitionProvider)
+    self.typeDefinitionProvider = try container.decodeIfPresent(Bool.self, forKey: .typeDefinitionProvider)
     self.foldingRangeProvider = try container.decodeIfPresent(Bool.self, forKey: .foldingRangeProvider)
     self.documentSymbolProvider = try container.decodeIfPresent(Bool.self, forKey: .documentSymbolProvider)
     self.colorProvider = try container.decodeIfPresent(Bool.self, forKey: .colorProvider)

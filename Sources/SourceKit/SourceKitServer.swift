@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift.org open source project
 //
-// Copyright (c) 2014 - 2018 Apple Inc. and the Swift project authors
+// Copyright (c) 2014 - 2019 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -72,6 +72,7 @@ public final class SourceKitServer: LanguageServer {
     registerWorkspaceRequest(SourceKitServer.completion)
     registerWorkspaceRequest(SourceKitServer.hover)
     registerWorkspaceRequest(SourceKitServer.definition)
+    registerWorkspaceRequest(SourceKitServer.typeDefinition)
     registerWorkspaceRequest(SourceKitServer.references)
     registerWorkspaceRequest(SourceKitServer.documentSymbolHighlight)
     registerWorkspaceRequest(SourceKitServer.foldingRange)
@@ -260,6 +261,7 @@ extension SourceKitServer {
       ),
       hoverProvider: true,
       definitionProvider: true,
+      typeDefinitionProvider: true,
       referencesProvider: true,
       documentHighlightProvider: true,
       foldingRangeProvider: true,
@@ -414,6 +416,61 @@ extension SourceKitServer {
         )
       }
 
+      req.reply(locations.isEmpty ? fallbackLocation : locations)
+    }
+    req.cancellationToken.addCancellationHandler { [weak service] in
+      service?.send(CancelRequest(id: id))
+    }
+  }
+  
+  // FIXME: a lot of duplication with definition request
+  func typeDefinition(_ req: Request<TypeDefinitionRequest>, workspace: Workspace) {
+    // FIXME: sending yourself a request isn't very convenient
+    
+    guard let service = workspace.documentService[req.params.textDocument.url] else {
+      req.reply([])
+      return
+    }
+    
+    let id = service.send(SymbolInfoRequest(textDocument: req.params.textDocument, position: req.params.position), queue: queue) { result in
+      guard let symbols: [SymbolDetails] = result.success ?? nil, let symbol = symbols.first else {
+        if let error = result.failure {
+          req.reply(.failure(error))
+        } else {
+          req.reply([])
+        }
+        return
+      }
+      
+      let fallbackLocation = [symbol.bestLocalDeclaration].compactMap { $0 }
+      
+      guard let typeusr = symbol.typeusr, let index = workspace.index else {
+        return req.reply(fallbackLocation)
+      }
+      
+      log("performing indexed jump-to-type-def with typeusr \(typeusr)")
+      
+      var occurs = index.occurrences(ofUSR: typeusr, roles: [.definition])
+      if occurs.isEmpty {
+        occurs = index.occurrences(ofUSR: typeusr, roles: [.declaration])
+      }
+      
+      // FIXME: overrided method logic
+      
+      let locations = occurs.compactMap { occur -> Location? in
+        if occur.location.path.isEmpty {
+          return nil
+        }
+        return Location(
+          url: URL(fileURLWithPath: occur.location.path),
+          range: Range(Position(
+            line: occur.location.line - 1, // 1-based -> 0-based
+            // FIXME: we need to convert the utf8/utf16 column, which may require reading the file!
+            utf16index: occur.location.utf8Column - 1
+          ))
+        )
+      }
+      
       req.reply(locations.isEmpty ? fallbackLocation : locations)
     }
     req.cancellationToken.addCancellationHandler { [weak service] in

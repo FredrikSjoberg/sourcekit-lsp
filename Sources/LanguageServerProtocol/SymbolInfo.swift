@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift.org open source project
 //
-// Copyright (c) 2014 - 2018 Apple Inc. and the Swift project authors
+// Copyright (c) 2014 - 2019 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -66,6 +66,9 @@ public struct SymbolDetails: ResponseType, Hashable {
   /// The USR of the symbol, if any.
   public var usr: String?
 
+  /// The USR of the symbol's type, if any.
+  public var typeusr: String?
+
   /// An opaque identifier in a format known only to clangd.
   // public var id: String?
 
@@ -82,11 +85,13 @@ public struct SymbolDetails: ResponseType, Hashable {
     name: String?,
     containerName: String? = nil,
     usr: String?,
+    typeusr: String?,
     bestLocalDeclaration: Location? = nil)
   {
     self.name = name
     self.containerName = containerName
     self.usr = usr
+    self.typeusr = typeusr
     self.bestLocalDeclaration = bestLocalDeclaration
   }
 }

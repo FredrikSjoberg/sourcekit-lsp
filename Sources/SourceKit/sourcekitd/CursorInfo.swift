@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift.org open source project
 //
-// Copyright (c) 2014 - 2018 Apple Inc. and the Swift project authors
+// Copyright (c) 2014 - 2019 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -67,6 +67,7 @@ extension CursorInfo {
         name: dict[keys.name],
         containerName: nil,
         usr: dict[keys.usr],
+        typeusr: dict[keys.typeusr],
         bestLocalDeclaration: location),
       annotatedDeclaration: dict[keys.annotated_decl],
       documentationXML: dict[keys.doc_full_as_xml])
@@ -158,6 +159,7 @@ extension SwiftLanguageServer {
           name: dict[self.keys.name],
           containerName: nil,
           usr: dict[self.keys.usr],
+          typeusr: dict[self.keys.typeusr],
           bestLocalDeclaration: location),
         annotatedDeclaration: dict[self.keys.annotated_decl],
         documentationXML: dict[self.keys.doc_full_as_xml]

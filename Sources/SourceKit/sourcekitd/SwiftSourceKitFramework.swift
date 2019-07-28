@@ -2,7 +2,7 @@
 //
 // This source file is part of the Swift.org open source project
 //
-// Copyright (c) 2014 - 2018 Apple Inc. and the Swift project authors
+// Copyright (c) 2014 - 2019 Apple Inc. and the Swift project authors
 // Licensed under Apache License v2.0 with Runtime Library Exception
 //
 // See https://swift.org/LICENSE.txt for license information
@@ -210,6 +210,7 @@ struct sourcekitd_keys {
   let filepath: sourcekitd_uid_t
   let ranges: sourcekitd_uid_t
   let usr: sourcekitd_uid_t
+  let typeusr: sourcekitd_uid_t
   let typename: sourcekitd_uid_t
   let annotated_decl: sourcekitd_uid_t
   let doc_full_as_xml: sourcekitd_uid_t
@@ -240,6 +241,7 @@ struct sourcekitd_keys {
     filepath = api.uid_get_from_cstr("key.filepath")!
     ranges = api.uid_get_from_cstr("key.ranges")!
     usr = api.uid_get_from_cstr("key.usr")!
+    typeusr = api.uid_get_from_cstr("key.typeusr")!
     typename = api.uid_get_from_cstr("key.typename")!
     annotated_decl = api.uid_get_from_cstr("key.annotated_decl")!
     doc_full_as_xml = api.uid_get_from_cstr("key.doc.full_as_xml")!
